@@ -24,40 +24,25 @@ sin encoders?
   Podriamos obtener una respuesta lenta o inexacta ya que sin retroalimentacion el control por PWM asume una relacion lineal entre la velocidad y el porcentaje de tiempo en alto. Al igual que un mayor error en la velocidad deseada.
   
 ---
-## Explicacion y conexion correcta de componentes
+## Análisis general de variaciones en las lecturas
 
-| **Componente**                 | **Pin del Componente**          | **Pin del Arduino UNO**     | **Descripción de la Conexión**                           |
-| ------------------------------ | ------------------------------- | --------------------------- | -------------------------------------------------------- |
-| **Driver L298N**               | IN1                             | D8                          | Control dirección Motor A                                |
-|                                | IN2                             | D9                          | Control dirección Motor A                                |
-|                                | IN3                             | D10                         | Control dirección Motor B                                |
-|                                | IN4                             | D11                         | Control dirección Motor B                                |
-|                                | ENA                             | D5 (PWM)                    | Habilita y controla velocidad Motor A                    |
-|                                | ENB                             | D6 (PWM)                    | Habilita y controla velocidad Motor B                    |
-| **Motores DC (x2)**            | Terminales de Motor A y Motor B | Salidas del L298N           | Conectados directamente al puente H                      |                                                                                                                       
-| **Sensor ultrasónico HC‑SR04** | Trig                            | D12                         | Pin de disparo (distancia)                               |
-|                                | Echo                            | D13                         | Pin de recepción (distancia)                             |    
-|| **Sensor IMU MPU‑6050**       | SDA                             | A4                          | Comunicación I²C                                         |
-|                                | SCL                             | A5                          | Comunicación I²C                                         |
-| **Módulo de alimentación**     | VIN o entrada batería           | Batería externa             | 9 V para todo el sistema                                 |
-|                                | 5V                              | 5V rail protoboard          | Alimentación de sensores                                 |
+Durante las pruebas realizadas con el sensor ultrasónico HC-SR04, se pudo observar que su desempeño varía dependiendo de las condiciones del entorno. En condiciones normales de luz y con superficies duras y planas, el sensor ofrece lecturas bastante precisas. Sin embargo, cuando se usa en presencia de luz intensa directa, o frente a superficies blandas o inclinadas, el sensor comienza a mostrar errores. Por ejemplo, cuando el objeto está inclinado, el rebote de la señal ultrasónica se desvía, lo que genera sobreestimaciones en la distancia. Para mejorar la fiabilidad de estos datos, se sugiere aplicar técnicas de filtrado, como una media móvil, y definir umbrales que permitan ignorar lecturas erráticas.
+
+El sensor de color RGB, su comportamiento también se ve influenciado por la iluminación del entorno. Cuando se trabaja en condiciones de luz natural uniforme, el sensor identifica los colores de forma correcta. Sin embargo, si hay sombras intensas o luz muy brillante, los valores RGB pueden verse distorsionados, generando errores en la identificación del color. Además, colores muy claros o muy oscuros pueden ser difíciles de clasificar sin una buena calibración. Para mejorar la detección, es útil normalizar los valores RGB y establecer rangos o umbrales específicos para cada color esperado.
+
 
 ---
 
 ## Parte 2:   
-  1. ¿Cómo se calcula la velocidad del robot sin encoders usando PWM?
-     - Para estimar la velocidad de un motor DC sin utilizar encoders, se recurre a la relación entre el ciclo de trabajo del PWM y la velocidad angular del eje del motor. ω = kD * D. Siendo D el ciclo de trabajo del PWM.
+  1. Si el robot detecta el color rojo en el suelo, ¿qué acción debería tomar? ¿Por qué?
+     - El color rojo podría representar una zona de peligro o una señal de “alto”. Por lo tanto, el robot debería detenerse inmediatamente al detectar rojo. Esta decisión está basada en una estrategia de navegación por reglas, donde los colores del suelo actúan como señales. 
 
-  2. ¿Cómo factores afectan la trayectoria y velocidad del robot al cambiar los intervalos de tiempo?
-     - Un motor DC no cambia instantáneamente de velocidad, tarda un tiempo de respuesta en estabilizarse. Si los “intervalos” son demasiado cortos, nunca alcanzará la velocidad objetivo, generando errores.
-     - Al girar, subir una pendiente o rozar una superficie distinta, la carga sobre el motor cambia. A igual PWM, la velocidad varía según la fricción o la pendiente.
-  3. ¿Cuáles son las ventajas y desventajas de usar un IMU para ajustar la dirección en lugar de encoders
+  2. Si el sensor ultrasónico detecta valores erráticos, ¿qué estrategias podrías aplicar para mejorar la precisión?
+      Existen varias estrategias útiles como el filtrado por media móvil, es decir,  promediar varias lecturas sucesivas para suavizar los cambios bruscos.
+      descarte de valores extremos, ignorar mediciones muy alejadas del promedio. O la repetición y validación para confirmar un valor solo si se repite varias veces de       forma coherente. Y finalmente el uso de umbrales de confiabilidad definiendo un rango aceptable para considerar una lectura válida.
+     
+  3. Si tuvieras que integrar un nuevo sensor para mejorar la navegación del robot, ¿cuál elegirías y por qué?
+    Incorporaría un sensor infrarrojo (IR) o una cámara con visión computacional básica. El sensor IR puede detectar cambios de color y obstáculos cercanos con rapidez y bajo costo. Por otro lado, una cámara permitiría realizar una navegación más avanzada, reconociendo formas, señales o patrones en el entorno, lo que haría al robot   más inteligente y adaptable en entornos complejos.
 
-      | Aspecto         | IMU (acelerómetro + giroscopio)                                                                                                                                                                                                                     |
-      | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | 
-      | **Ventajas**    | • Mide rotaciones y aceleraciones en 3 ejes (yaw, pitch, roll).<br>• Detecta inclinación y vuelcos, útil en terrenos irregulares.<br>• No requiere acoplamiento mecánico al eje de la rueda.                                                        | 
-      | **Desventajas** | • **Deriva**: el giroscopio sufre drift acumulativo si no se corrige con acelerómetro o magnetómetro.<br>• **Ruido**: los sensores  son sensibles a vibraciones.<br>• Requiere filtros (complementario o Kalman) para obtener ángulos estables. | 
-
-  4. ¿Qué efecto tiene la inclinación o el giro en el movimiento del robot, y cómo se corrige con el IMU?
-     - Si el robot sube o baja una pendiente, la componente de la gravedad cambia. Esto puede alterar la carga en los motores y provocar que avance más lento o se detenga. Midiendo el pitch, el sistema puede aumentar o disminuir el PWM para mantener la velocidad en el plano horizontal efectivo.
-     - Desniveles, superficies irregulares o diferencias de fricción hacen que el robot gire ligeramente al avanzar en línea recta. Midiendo el yaw con el giroscopio puedes calcular un erro y aplicar un corrector en la velocidad diferencial.
+  5. ¿Cuál es el tiempo de respuesta del robot al detectar un cambio de color?
+     Es el tiempo de respuesta depende del procesamiento del microcontrolador y de la frecuencia de lectura del sensor. En condiciones óptimas, el robot puede responder en menos de 200 milisegundos (0.2 segundos) al detectar un cambio de color. Este tiempo puede aumentar si hay mucho ruido, si se aplican filtros muy lentos, o si el código tiene muchos retrasos (delay()).
