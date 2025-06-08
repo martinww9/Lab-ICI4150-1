@@ -46,3 +46,10 @@ El sensor de color RGB, su comportamiento también se ve influenciado por la ilu
 
   5. ¿Cuál es el tiempo de respuesta del robot al detectar un cambio de color?
      Es el tiempo de respuesta depende del procesamiento del microcontrolador y de la frecuencia de lectura del sensor. En condiciones óptimas, el robot puede responder en menos de 200 milisegundos (0.2 segundos) al detectar un cambio de color. Este tiempo puede aumentar si hay mucho ruido, si se aplican filtros muy lentos, o si el código tiene muchos retrasos (delay()).
+
+     ---
+## Reflexión sobre posibles mejoras en la detección
+Durante las pruebas del sistema, se identificaron varias áreas donde la detección puede ser mejorada. En el caso del sensor ultrasónico, se observaron lecturas inestables o erráticas cuando había superficies anguladas o materiales que absorben el sonido. Para mejorar esto, se podría aplicar un promedio móvil de múltiples lecturas para filtrar valores anómalos.
+
+En cuanto al sensor de color, la detección depende fuertemente de la iluminación ambiental. Una mejora sería agregar una fuente de luz LED constante para estabilizar la lectura de los colores, o incluso utilizar sensores más avanzados, que incluyan compensación automática de luz.
+
