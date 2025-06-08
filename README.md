@@ -1,18 +1,20 @@
-# Lab1-ICI4150-1
+# Lab2-ICI4150-1
 
 ---
 
 ## Parte 1: 
 
-• ¿ Que funcion cumple los sensores, actuadores y controladores en el
-robot?
-  Los sensores capturan informacion del entorno o del propio robot. Los actuadores ejecturan la accion fisica en el robot, transforman senales electricas o de otro tipo, en movimiento mecanico o cambios de estado. Mientras que los controladores procesan la informacion de los sensores y envian señales a los actuadores para alcanzar el comportamiento desesado.
+• ¿Qué es la percepción en robótica y por qué es fundamental en los sistemas autónomos?
 
-• ¿ Como se puede estimar la velocidad sin encoders?
-  Se puede recurrir a metodos de estimacion basados en sensores inerciales, ultrasonido, SLAM basado en LIDAR o modelar matematicamente el motor.
+  La percepción en robótica es la capacidad de un robot para recolectar, interpretar y procesar datos sensoriales del entorno, permitiéndole tomar decisiones informadas. Esta se basa en el uso de sensores como cámaras, ultrasonidos, IMU, LIDAR, entre otros.
+Es fundamental en sistemas autónomos porque les permite reconocer su entorno (por ejemplo, detectar obstáculos, reconocer colores o detectar movimiento), facilita la planificación de rutas y la navegación segura. Ademas les otorga autonomía para adaptarse a cambios en el ambiente sin intervención humana.
 
-• ¿ Como afecta la falta de encoders a la precision del movimiento?
-  Sin retroalimentacion directa de los ejes, no se corrigen errores debido a cargas variables, deslizamientos o irregularidades del terreno. Ademas las desviaciones de rumbo y posicion limitan la capacidad de mantener rutas exactas, especialmente en largos recorridos.
+• En el sensor ultrasónico HC-SR04 ¿qué parámetro se mide para calcular la distancia?
+  El sensor ultrasónico HC-SR04 mide el tiempo de vuelo (o time of flight) de una señal ultrasónica. Específicamente, se mide el tiempo que tarda el pulso ultrasónico en salir del transmisor, reflejarse en un objeto y regresar al receptor. La fórmula utilizada para calcular la distancia es tiempo por velocidad del sonido dividido en 2.
+
+• ¿Cómo influye el ruido en las mediciones del sensor ultrasónico y cómo podría reducirse?
+  El ruido en las mediciones del HC-SR04 se puede manifestar como fluctuaciones erráticas en la distancia medida, incluso cuando el objeto permanece estático. Este     ruido puede deberse a reflexión imperfecta del sonido en superficies irregulares o suaves, condiciones ambientales como temperatura o humedad, interferencias acústicas o vibraciones externas y errores electrónicos o de programación.
+  Se puede reducir a traves del filtrado de señal, por ejemplo, aplicar un filtro de mediana para eliminar valores atípicos. La umbralización o aislando los sensores.
 
 • ¿ Que es PWM y como ayuda a controlar la velocidad de los motores?
   Es una tecnica de modulacion de la anchura del pulso para controlar la potencia media entregada a un motor. Variando el porcentaje de tiempo en alto podemos aumentar o disminuir la velocidad de manera proporcional.
